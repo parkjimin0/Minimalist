@@ -16,11 +16,23 @@ const RootStack = createStackNavigator({
         flex: 1,
         fontFamily: 'sans-serif-thin',
       },
-      headerTransparent: true,
+      // headerTransparent: true,
     }),
   },
   Timer: {
     screen: TimerScreen,
+    navigationOptions: () => ({
+      title: 'T I M E R',
+      headerTitleStyle: {
+        alignSelf: 'center',
+        textAlign: 'center',
+        fontSize: 20,
+        justifyContent: 'center',
+        flex: 0.5,
+        fontFamily: 'sans-serif-thin',
+      },
+      headerTransparent: true,
+    }),
   },
   initialRouteName: 'TodoList',
 });
