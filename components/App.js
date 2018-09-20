@@ -1,32 +1,32 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
 import TodoListScreen from './TodoList';
 import { createStackNavigator } from 'react-navigation';
-import { Container, Header, Body, Title } from 'native-base';
 import TimerScreen from './Timer';
 
-const RootStack = createStackNavigator(
-  {
-    TodoList: TodoListScreen,
-    Timer: TimerScreen,
+const RootStack = createStackNavigator({
+  ToDoList: {
+    screen: TodoListScreen,
+    navigationOptions: () => ({
+      title: 'M I N I M A L I S T',
+      headerTitleStyle: {
+        alignSelf: 'center',
+        textAlign: 'center',
+        fontSize: 20,
+        justifyContent: 'center',
+        flex: 1,
+        fontFamily: 'sans-serif-thin',
+      },
+      headerTransparent: true,
+    }),
   },
-  {
-    initialRouteName: 'TodoList',
-  }
-);
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  Timer: {
+    screen: TimerScreen,
   },
+  initialRouteName: 'TodoList',
 });
 
 export default class App extends Component {
   render() {
-    return (
-      <View style={styles.container}>
-        <RootStack />
-      </View>
-    );
+    return <RootStack />;
   }
 }

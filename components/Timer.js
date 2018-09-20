@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Button } from 'react-native';
-import TodoListScreen from './TodoList';
-import { createStackNavigator } from 'react-navigation';
 
 export default class TimerScreen extends Component {
   render() {
@@ -25,13 +23,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-const RootStack = createStackNavigator(
-  {
-    TodoList: TodoListScreen,
-    Timers: TimerScreen,
-  },
-  {
-    initialRouteName: 'TodoList',
-  }
-);
