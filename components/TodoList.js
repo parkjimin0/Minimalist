@@ -5,7 +5,6 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Button,
   AsyncStorage,
   TextInput,
   TouchableOpacity,
@@ -25,6 +24,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     // flex: 1,
     marginBottom: 100,
+
     marginTop: 25,
   },
   textInput: {
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
   },
 });
 
+let counter = 1;
 export default class TodoListScreen extends Component {
   constructor(props) {
     super(props);
@@ -65,22 +66,60 @@ export default class TodoListScreen extends Component {
     };
   }
 
+  // async getAllTasks() {
+  //   try {
+  //     // AsyncStorage.clear();
+  //     const allKeys = await AsyncStorage.getAllKeys();
+  //     console.log('what is all keys', allKeys);
+  //     let newTaskList = [];
+  //     for (let i = 1; i < allKeys.length; i++) {
+  //       let task = await AsyncStorage.getItem(`${i}`);
+  //       newTaskList.push(task);
+  //     }
+
+  //     this.setState({ taskList: newTaskList });
+  //   } catch (err) {
+  //     alert(err);
+  //   }
+  // }
+  // componentDidMount() {
+  //   this.getAllTasks();
+  // }
+  newTodoItem = txt => {
+    this.setState({
+      task: txt,
+    });
+  };
+
   addNote() {
-    if (this.state.task) {
-      this.state.taskList.push({
-        task: this.state.task,
+    const { taskList, task } = this.state;
+    if (task) {
+      taskList.push({
+        task: task,
       });
-      this.setState({ taskList: this.state.taskList });
+
+      const taskArr = {
+        taskList: taskList,
+      };
+
+      // console.log('counter before', counter);
+      // AsyncStorage.setItem(`${counter}`, task);
+      // counter++;
+      // console.log('counter', counter);
+
+      this.setState({ taskList: taskList });
       this.setState({ task: '' });
     }
   }
 
-  deleteTask(key) {
+  async deleteTask(key) {
+    // await AsyncStorage.removeItem(key);
     this.state.taskList.splice(key, 1);
     this.setState({ taskList: this.state.taskList });
   }
 
   render() {
+    // console.log('all tasks?', this.state.taskList);
     let tasks = this.state.taskList.map((val, key) => {
       return (
         <AddToDo
@@ -101,7 +140,7 @@ export default class TodoListScreen extends Component {
           placeholder="What do you need to do?"
           placerholderTextColor="white"
           underlineColorAndroid="transparent"
-          onChangeText={task => this.setState({ task: task })}
+          onChangeText={this.newTodoItem}
           value={this.state.task}
         />
         <TouchableOpacity
