@@ -65,6 +65,37 @@ export default class TodoListScreen extends Component {
       taskList: [],
     };
   }
+  inCompleteTodo = id => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            isCompleted: false,
+          },
+        },
+      };
+      return { ...newState };
+    });
+  };
+
+  completeTodo = id => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            isCompleted: true,
+          },
+        },
+      };
+      return { ...newState };
+    });
+  };
 
   newTask = txt => {
     this.setState({
@@ -96,6 +127,22 @@ export default class TodoListScreen extends Component {
     }
   }
 
+  updateTodo = (id, textValue) => {
+    this.setState(prevState => {
+      const newState = {
+        ...prevState,
+        todos: {
+          ...prevState.todos,
+          [id]: {
+            ...prevState.todos[id],
+            textValue: textValue,
+          },
+        },
+      };
+      return { ...newState };
+    });
+  };
+
   deleteTodo = id => {
     this.setState(prevState => {
       const todos = prevState.todos;
@@ -109,20 +156,7 @@ export default class TodoListScreen extends Component {
   };
 
   render() {
-    // console.log('all tasks?', this.state.taskList);
     const { task, todos } = this.state;
-    // let tasks = this.state.taskList.map((val, key) => {
-    //   return (
-    //     <AddToDo
-    //       key={key}
-    //       keyval={key}
-    //       val={val}
-    //       deleteMethod={() => this.deleteTask(key)}
-    //       timer={() => this.props.navigation.navigate('Timer')}
-    //       textValue={val.task}
-    //     />
-    //   );
-    // });
 
     return (
       <View style={styles.container}>
@@ -132,6 +166,9 @@ export default class TodoListScreen extends Component {
               key={todo.id}
               {...todo}
               deleteTodo={this.deleteTodo}
+              inCompleteTodo={this.inCompleteTodo}
+              completeTodo={this.completeTodo}
+              updateTodo={this.updateTodo}
               timer={() => this.props.navigation.navigate('Timer')}
             />
           ))}

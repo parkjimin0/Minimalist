@@ -43,12 +43,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
   },
-  // rowContainer: {
-  //   flexDirection: 'column',
-  //   // width: this.width / 2,
-  //   alignItems: 'flex-start',
-  //   justifyContent: 'flex-start',
-  // },
 });
 
 export default class AddToDo extends Component {
@@ -56,7 +50,7 @@ export default class AddToDo extends Component {
     super(props);
     this.state = {
       isEditing: false,
-      changedTask: props.textValue,
+      changedTask: this.props.textValue,
       dataIsReady: false,
     };
   }
@@ -66,6 +60,9 @@ export default class AddToDo extends Component {
     isCompleted: PropTypes.bool.isRequired,
     deleteTodo: PropTypes.func.isRequired,
     id: PropTypes.string.isRequired,
+    inCompleteTodo: PropTypes.func.isRequired,
+    completeTodo: PropTypes.func.isRequired,
+    updateTodo: PropTypes.func.isRequired,
   };
 
   componentDidMount = () => {
@@ -86,30 +83,32 @@ export default class AddToDo extends Component {
   };
 
   finishEdit = () => {
+    const { changedTask } = this.state;
+    const { id, updateTodo } = this.props;
+    updateTodo(id, changedTask);
     this.setState({
       isEditing: false,
     });
-    this.props.textValue = this.changedTask;
   };
 
   toggleItem = () => {
-    this.setState(prevState => {
-      return {
-        isCompleted: !prevState.isCompleted,
-      };
-    });
+    const { isCompleted, inCompleteTodo, completeTodo, id } = this.props;
+    if (isCompleted) {
+      inCompleteTodo(id);
+    } else {
+      completeTodo(id);
+    }
+    // this.setState(prevState => {
+    //   return {
+    //     isCompleted: !prevState.isCompleted,
+    //   };
+    // });
   };
 
   render() {
-    const {
-      isEditing,
-      isCompleted,
-      changedTask,
-      newTodoItem,
-      dataIsReady,
-    } = this.state;
+    const { isEditing, changedTask, dataIsReady } = this.state;
 
-    const { textValue, id, deleteTodo } = this.props;
+    const { textValue, id, deleteTodo, isCompleted } = this.props;
     if (!dataIsReady) return <AppLoading />;
     return (
       <View key={this.props.keyval} style={styles.container}>
