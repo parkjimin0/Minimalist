@@ -16,26 +16,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
   },
   header: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     borderBottomWidth: 1.5,
   },
   scrollContainer: {
-    flex: 1,
+    // flex: 1,
     marginBottom: 100,
+    marginTop: 25,
   },
   textInput: {
     alignSelf: 'stretch',
     color: 'black',
     padding: 5,
-    borderBottomWidth: 2,
+    borderBottomWidth: 5,
     fontSize: 18,
     borderTopWidth: 5,
     borderTopColor: '#fff',
+    marginBottom: 10,
   },
   addButton: {
     position: 'absolute',
@@ -83,34 +83,27 @@ export default class TodoListScreen extends Component {
   render() {
     let tasks = this.state.taskList.map((val, key) => {
       return (
-        <View key={val}>
-          <AddToDo
-            key={key}
-            keyval={key}
-            val={val}
-            deleteMethod={() => this.deleteTask(key)}
-          />
-          <Button
-            title="Go to Timer"
-            onPress={() => this.props.navigation.navigate('Timer')}
-          />
-        </View>
+        <AddToDo
+          key={key}
+          keyval={key}
+          val={val}
+          deleteMethod={() => this.deleteTask(key)}
+          timer={() => this.props.navigation.navigate('Timer')}
+        />
       );
     });
 
     return (
       <View style={styles.container}>
         <ScrollView style={styles.scrollContainer}>{tasks}</ScrollView>
-        <View>
-          <TextInput
-            style={styles.textInput}
-            placeholder=">task"
-            placerholderTextColor="white"
-            underlineColorAndroid="transparent"
-            onChangeText={task => this.setState({ task: task })}
-            value={this.state.task}
-          />
-        </View>
+        <TextInput
+          style={styles.textInput}
+          placeholder="What do you need to do?"
+          placerholderTextColor="white"
+          underlineColorAndroid="transparent"
+          onChangeText={task => this.setState({ task: task })}
+          value={this.state.task}
+        />
         <TouchableOpacity
           style={styles.addButton}
           onPress={this.addNote.bind(this)}
