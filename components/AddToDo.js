@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { Feather, MaterialIcons, EvilIcons } from '@expo/vector-icons';
+import { LinearGradient, AppLoading } from 'expo';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   container: {
@@ -47,10 +55,29 @@ export default class AddToDo extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isCompleted: false,
       isEditing: false,
+      changedTask: props.textValue,
+      dataIsReady: false,
     };
   }
+
+  static propTypes = {
+    textValue: PropTypes.string.isRequired,
+    isCompleted: PropTypes.bool.isRequired,
+    deleteTodo: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
+  };
+
+  componentDidMount = () => {
+    this.loadTodos();
+  };
+
+  loadTodos = () => {
+    this.setState({ dataIsReady: true });
+  };
+  controlInput = txt => {
+    this.setState({ changedTask: txt });
+  };
 
   startEdit = () => {
     this.setState({
@@ -62,6 +89,7 @@ export default class AddToDo extends Component {
     this.setState({
       isEditing: false,
     });
+    this.props.textValue = this.changedTask;
   };
 
   toggleItem = () => {
@@ -73,7 +101,16 @@ export default class AddToDo extends Component {
   };
 
   render() {
-    const { isEditing, isCompleted } = this.state;
+    const {
+      isEditing,
+      isCompleted,
+      changedTask,
+      newTodoItem,
+      dataIsReady,
+    } = this.state;
+
+    const { textValue, id, deleteTodo } = this.props;
+    if (!dataIsReady) return <AppLoading />;
     return (
       <View key={this.props.keyval} style={styles.container}>
         {isEditing ? (
@@ -100,25 +137,37 @@ export default class AddToDo extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={this.props.deleteMethod}
+              onPress={() => deleteTodo(id)}
               style={styles.buttonContainer}
             >
               <MaterialIcons name="clear" size={25} color="black" />
             </TouchableOpacity>
           </View>
         )}
-        {/* <View style={styles.rowContainer}> */}
-        <TouchableOpacity onPress={this.toggleItem}>
-          <Text
+
+        {isEditing ? (
+          <TextInput
             style={[
               styles.text,
               isCompleted ? styles.strikeText : styles.unstrikeText,
             ]}
-          >
-            {this.props.val.task}
-          </Text>
-        </TouchableOpacity>
-        {/* </View> */}
+            multiline={true}
+            onBlur={this.finishEdit}
+            onChangeText={this.controlInput}
+            value={changedTask}
+          />
+        ) : (
+          <TouchableOpacity onPress={this.toggleItem}>
+            <Text
+              style={[
+                styles.text,
+                isCompleted ? styles.strikeText : styles.unstrikeText,
+              ]}
+            >
+              {textValue}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }

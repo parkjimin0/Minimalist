@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import AddToDoButton from './AddToDoButton';
+import uuidv1 from 'uuid/v1';
 import AddToDo from './AddToDo';
 import {
   StyleSheet,
@@ -56,92 +56,93 @@ const styles = StyleSheet.create({
   },
 });
 
-let counter = 1;
 export default class TodoListScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       task: '',
+      todos: {},
       taskList: [],
     };
   }
 
-  // async getAllTasks() {
-  //   try {
-  //     // AsyncStorage.clear();
-  //     const allKeys = await AsyncStorage.getAllKeys();
-  //     console.log('what is all keys', allKeys);
-  //     let newTaskList = [];
-  //     for (let i = 1; i < allKeys.length; i++) {
-  //       let task = await AsyncStorage.getItem(`${i}`);
-  //       newTaskList.push(task);
-  //     }
-
-  //     this.setState({ taskList: newTaskList });
-  //   } catch (err) {
-  //     alert(err);
-  //   }
-  // }
-  // componentDidMount() {
-  //   this.getAllTasks();
-  // }
-  newTodoItem = txt => {
+  newTask = txt => {
     this.setState({
       task: txt,
     });
   };
-
   addNote() {
     const { taskList, task } = this.state;
     if (task) {
-      taskList.push({
-        task: task,
+      this.setState(prevState => {
+        const ID = uuidv1();
+        const newToDoObject = {
+          [ID]: {
+            id: ID,
+            isCompleted: false,
+            textValue: task,
+          },
+        };
+        const newState = {
+          ...prevState,
+          task: '',
+          todos: {
+            ...prevState.todos,
+            ...newToDoObject,
+          },
+        };
+        return { ...newState };
       });
-
-      const taskArr = {
-        taskList: taskList,
-      };
-
-      // console.log('counter before', counter);
-      // AsyncStorage.setItem(`${counter}`, task);
-      // counter++;
-      // console.log('counter', counter);
-
-      this.setState({ taskList: taskList });
-      this.setState({ task: '' });
     }
   }
 
-  async deleteTask(key) {
-    // await AsyncStorage.removeItem(key);
-    this.state.taskList.splice(key, 1);
-    this.setState({ taskList: this.state.taskList });
-  }
+  deleteTodo = id => {
+    this.setState(prevState => {
+      const todos = prevState.todos;
+      delete todos[id];
+      const newState = {
+        ...prevState,
+        ...todos,
+      };
+      return { ...newState };
+    });
+  };
 
   render() {
     // console.log('all tasks?', this.state.taskList);
-    let tasks = this.state.taskList.map((val, key) => {
-      return (
-        <AddToDo
-          key={key}
-          keyval={key}
-          val={val}
-          deleteMethod={() => this.deleteTask(key)}
-          timer={() => this.props.navigation.navigate('Timer')}
-        />
-      );
-    });
+    const { task, todos } = this.state;
+    // let tasks = this.state.taskList.map((val, key) => {
+    //   return (
+    //     <AddToDo
+    //       key={key}
+    //       keyval={key}
+    //       val={val}
+    //       deleteMethod={() => this.deleteTask(key)}
+    //       timer={() => this.props.navigation.navigate('Timer')}
+    //       textValue={val.task}
+    //     />
+    //   );
+    // });
 
     return (
       <View style={styles.container}>
-        <ScrollView style={styles.scrollContainer}>{tasks}</ScrollView>
+        <ScrollView style={styles.scrollContainer}>
+          {Object.values(todos).map(todo => (
+            <AddToDo
+              key={todo.id}
+              {...todo}
+              deleteTodo={this.deleteTodo}
+              timer={() => this.props.navigation.navigate('Timer')}
+            />
+          ))}
+        </ScrollView>
         <TextInput
           style={styles.textInput}
           placeholder="What do you need to do?"
           placerholderTextColor="white"
           underlineColorAndroid="transparent"
-          onChangeText={this.newTodoItem}
-          value={this.state.task}
+          onChangeText={this.newTask}
+          value={task}
         />
         <TouchableOpacity
           style={styles.addButton}
