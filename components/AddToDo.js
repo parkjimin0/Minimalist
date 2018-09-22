@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
 import { Feather, MaterialIcons, EvilIcons } from '@expo/vector-icons';
 import { LinearGradient, AppLoading } from 'expo';
@@ -69,9 +70,17 @@ export default class AddToDo extends Component {
     this.loadTodos();
   };
 
-  loadTodos = () => {
-    this.setState({ dataIsReady: true });
+  loadTodos = async () => {
+    try {
+      const getTodos = await AsyncStorage.getItem('todos');
+      const parsedTodos = JSON.parse(getTodos);
+      console.log('what is stored', parsedTodos);
+      this.setState({ dataIsReady: true, todos: parsedTodos || {} });
+    } catch (err) {
+      console.log(err);
+    }
   };
+
   controlInput = txt => {
     this.setState({ changedTask: txt });
   };
@@ -98,11 +107,6 @@ export default class AddToDo extends Component {
     } else {
       completeTodo(id);
     }
-    // this.setState(prevState => {
-    //   return {
-    //     isCompleted: !prevState.isCompleted,
-    //   };
-    // });
   };
 
   render() {

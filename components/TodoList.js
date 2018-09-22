@@ -62,9 +62,30 @@ export default class TodoListScreen extends Component {
     this.state = {
       task: '',
       todos: {},
-      taskList: [],
+      isCompleted: false,
     };
   }
+  componentDidMount = () => {
+    this.loadTodos();
+  };
+
+  loadTodos = async () => {
+    try {
+      const getTodos = await AsyncStorage.getItem('todos');
+      const parsedTodos = JSON.parse(getTodos);
+      console.log('what is stored', parsedTodos);
+      this.setState({ dataIsReady: true, todos: parsedTodos || {} });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  taskStored = newToDos => {
+    const saveToDos = AsyncStorage.setItem('todos', JSON.stringify(newToDos));
+
+    return saveToDos;
+  };
+
   inCompleteTodo = id => {
     this.setState(prevState => {
       const newState = {
@@ -77,6 +98,8 @@ export default class TodoListScreen extends Component {
           },
         },
       };
+
+      this.taskStored(newState.todos);
       return { ...newState };
     });
   };
@@ -93,6 +116,7 @@ export default class TodoListScreen extends Component {
           },
         },
       };
+      this.taskStored(newState.todos);
       return { ...newState };
     });
   };
@@ -102,8 +126,9 @@ export default class TodoListScreen extends Component {
       task: txt,
     });
   };
+
   addNote() {
-    const { taskList, task } = this.state;
+    const { task } = this.state;
     if (task) {
       this.setState(prevState => {
         const ID = uuidv1();
@@ -122,6 +147,7 @@ export default class TodoListScreen extends Component {
             ...newToDoObject,
           },
         };
+        this.taskStored(newState.todos);
         return { ...newState };
       });
     }
@@ -139,6 +165,7 @@ export default class TodoListScreen extends Component {
           },
         },
       };
+      this.taskStored(newState.todos);
       return { ...newState };
     });
   };
@@ -151,12 +178,14 @@ export default class TodoListScreen extends Component {
         ...prevState,
         ...todos,
       };
+      this.taskStored(newState.todos);
       return { ...newState };
     });
   };
 
   render() {
-    const { task, todos } = this.state;
+    const { task, todos, isCompleted } = this.state;
+    console.log('my AsyncStorage', AsyncStorage);
 
     return (
       <View style={styles.container}>
@@ -166,6 +195,7 @@ export default class TodoListScreen extends Component {
               key={todo.id}
               {...todo}
               deleteTodo={this.deleteTodo}
+              isCompleted={isCompleted}
               inCompleteTodo={this.inCompleteTodo}
               completeTodo={this.completeTodo}
               updateTodo={this.updateTodo}
