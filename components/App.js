@@ -31,7 +31,7 @@ const RootStack = createStackNavigator({
         flex: 0.5,
         fontFamily: 'sans-serif-thin',
       },
-      headerTransparent: true,
+      // headerTransparent: true,
     }),
   },
   initialRouteName: 'TodoList',

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import uuidv1 from 'uuid/v1';
 import AddToDo from './AddToDo';
+
 import {
   StyleSheet,
   View,
@@ -22,7 +23,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1.5,
   },
   scrollContainer: {
-    // flex: 1,
     marginBottom: 100,
 
     marginTop: 25,
@@ -62,7 +62,6 @@ export default class TodoListScreen extends Component {
     this.state = {
       task: '',
       todos: {},
-      // isCompleted: false,
     };
   }
   componentDidMount = () => {
@@ -73,7 +72,7 @@ export default class TodoListScreen extends Component {
     try {
       const getTodos = await AsyncStorage.getItem('todos');
       const parsedTodos = JSON.parse(getTodos);
-      console.log('what is stored', parsedTodos);
+
       this.setState({ dataIsReady: true, todos: parsedTodos || {} });
     } catch (err) {
       console.log(err);
@@ -185,7 +184,6 @@ export default class TodoListScreen extends Component {
 
   render() {
     const { task, todos, isCompleted } = this.state;
-    console.log('my AsyncStorage', AsyncStorage);
 
     return (
       <View style={styles.container}>

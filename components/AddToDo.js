@@ -75,7 +75,7 @@ export default class AddToDo extends Component {
     try {
       const getTodos = await AsyncStorage.getItem('todos');
       const parsedTodos = JSON.parse(getTodos);
-      console.log('what is stored', parsedTodos);
+
       this.setState({ dataIsReady: true, todos: parsedTodos || {} });
     } catch (err) {
       console.log(err);
@@ -159,6 +159,7 @@ export default class AddToDo extends Component {
             onBlur={this.finishEdit}
             onChangeText={this.controlInput}
             value={changedTask}
+            underlineColorAndroid="transparent"
           />
         ) : (
           <TouchableOpacity onPress={this.toggleItem}>
