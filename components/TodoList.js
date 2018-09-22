@@ -62,7 +62,7 @@ export default class TodoListScreen extends Component {
     this.state = {
       task: '',
       todos: {},
-      isCompleted: false,
+      // isCompleted: false,
     };
   }
   componentDidMount = () => {
@@ -195,7 +195,7 @@ export default class TodoListScreen extends Component {
               key={todo.id}
               {...todo}
               deleteTodo={this.deleteTodo}
-              isCompleted={isCompleted}
+              // isCompleted={isCompleted}
               inCompleteTodo={this.inCompleteTodo}
               completeTodo={this.completeTodo}
               updateTodo={this.updateTodo}

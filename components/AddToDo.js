@@ -53,6 +53,7 @@ export default class AddToDo extends Component {
       isEditing: false,
       changedTask: this.props.textValue,
       dataIsReady: false,
+      // todos: this.props.todos,
     };
   }
 
