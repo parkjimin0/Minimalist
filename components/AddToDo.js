@@ -8,7 +8,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 import { Feather, MaterialIcons, EvilIcons } from '@expo/vector-icons';
-import { LinearGradient, AppLoading } from 'expo';
+import Expo, { LinearGradient, AppLoading } from 'expo';
 import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
@@ -71,6 +71,17 @@ export default class AddToDo extends Component {
     this.loadTodos();
   };
 
+  async playTrack() {
+    const soundObject = new Expo.Audio.Sound();
+    try {
+      await soundObject.loadAsync(require('./pen.mp3'));
+      await soundObject.playAsync();
+      // Your sound is playing!
+    } catch (err) {
+      console.error('Sound problems', err);
+    }
+  }
+
   loadTodos = async () => {
     try {
       const getTodos = await AsyncStorage.getItem('todos');
@@ -106,6 +117,7 @@ export default class AddToDo extends Component {
     if (isCompleted) {
       inCompleteTodo(id);
     } else {
+      this.playTrack();
       completeTodo(id);
     }
   };
