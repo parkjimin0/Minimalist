@@ -7,83 +7,24 @@ import {
   TouchableOpacity,
   Vibration,
 } from 'react-native';
-
 import Expo from 'expo';
+import moment from 'moment';
+import momentDurationFormatSetup from 'moment-duration-format';
+momentDurationFormatSetup(moment);
 
 import { Ionicons } from '@expo/vector-icons';
 
 export default class TimerScreen extends Component {
+  state = {
+    started: null,
+    timeDifference: null,
+    timer: null,
+    finished: null,
+  };
   constructor() {
     super();
-    this.state = {
-      countDown: false,
-      remainingSeconds: 30 * 60,
-      interval: null,
-    };
-  }
 
-  handleStart() {
-    const ival = setInterval(() => {
-      if (this.state.remainingSeconds > 0 && this.state.countDown) {
-        this.setState(prevState => {
-          return { remainingSeconds: prevState.remainingSeconds - 1 };
-        });
-      }
-    }, 1000);
-
-    this.setState(prevState => {
-      return {
-        remainingSeconds: prevState.remainingSeconds,
-        countDown: true,
-        interval: ival,
-      };
-    });
-  }
-
-  handleStop() {
-    clearInterval(this.state.interval);
-    this.setState(prevState => {
-      return {
-        remainingSeconds: prevState.remainingSeconds,
-        countDown: false,
-        interval: null,
-      };
-    });
-  }
-
-  handleReset() {
-    clearInterval(this.state.interval);
-    this.setState(() => {
-      return {
-        remainingSeconds: 30 * 60,
-        countDown: false,
-      };
-    });
-  }
-
-  formatRemainingSeconds(remainingSeconds) {
-    let numMinutes = Math.floor(remainingSeconds / 60);
-
-    let numSeconds = remainingSeconds % 60;
-    let formattedTime = '';
-
-    if (numMinutes.toString().length == 1) {
-      formattedTime += '0';
-      formattedTime += numMinutes.toString();
-    } else {
-      formattedTime += numMinutes.toString();
-    }
-
-    formattedTime += ':';
-
-    if (numSeconds.toString().length == 1) {
-      formattedTime += '0';
-      formattedTime += numSeconds.toString();
-    } else {
-      formattedTime += numSeconds.toString();
-    }
-
-    return formattedTime;
+    this.tick = this.tick.bind(this);
   }
 
   async playTrack() {
@@ -96,20 +37,47 @@ export default class TimerScreen extends Component {
       console.error('Sound problems', err);
     }
   }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+  handleStart() {
+    this.setState({ started: moment() }, () => {
+      this.timer = setInterval(this.tick, 1000);
+    });
+  }
+
+  tick() {
+    this.setState({ timeDifference: moment().diff(this.state.started) });
+  }
+
+  handleReset() {
+    Vibration.vibrate(3000);
+
+    this.playTrack();
+    alert(
+      `It took ${moment
+        .duration(this.state.timeDifference, 'milliseconds')
+        .format('h [hours], m [minutes], s [seconds]')} to finish! `
+    );
+    this.setState({ timer: null, started: false });
+    clearInterval(this.timer);
+  }
+
+  timerText() {
+    return (
+      <Text style={styles.timerText}>
+        {moment
+          .duration(this.state.timeDifference, 'milliseconds')
+          .format('h:mm:ss')}
+      </Text>
+    );
+  }
 
   render() {
-    if (this.state.remainingSeconds === 1) {
-      Vibration.vibrate(3000);
-
-      this.playTrack();
-      alert(`Time's up!`);
-    }
     return (
       <View style={styles.container}>
         <View style={styles.box}>
-          <Text style={styles.timer}>
-            {this.formatRemainingSeconds(this.state.remainingSeconds)}
-          </Text>
+          <Text style={styles.timer}>{this.timerText()}</Text>
         </View>
         <View
           style={(styles.box, { flexDirection: 'row', alignItems: 'baseline' })}
@@ -120,15 +88,17 @@ export default class TimerScreen extends Component {
           >
             <Ionicons name="ios-play-outline" color="black" size={70} />
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => this.handleStop()}
+            onPress={() => this.setState({ finished: moment() })}
           >
             <Ionicons name="ios-pause-outline" size={70} color="black" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={() => this.handleReset()}
+            onPress={() => {
+              this.handleReset();
+            }}
           >
             <Ionicons
               name="ios-remove-circle-outline"
@@ -151,10 +121,16 @@ export default class TimerScreen extends Component {
               marginBottom: 10,
             }}
             placeholder="+"
-            onChangeText={text =>
-              this.setState({ remainingSeconds: Number(text) * 60 })
-            }
-            value={this.state.remainingSeconds}
+            onChangeText={text => {
+              this.handleStart();
+              if (text > 0) {
+                setTimeout(() => {
+                  this.playTrack();
+                  alert(`Time's up! `);
+                }, text * 60000);
+              }
+            }}
+            value={this.state.timeGoal}
           />
         </View>
       </View>
@@ -175,7 +151,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   timer: {
-    fontSize: 100,
+    fontSize: 70,
     textAlign: 'center',
     color: 'black',
   },
