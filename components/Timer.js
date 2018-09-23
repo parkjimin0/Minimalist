@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {
   StyleSheet,
   View,
@@ -6,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Vibration,
+  Platform,
 } from 'react-native';
 import Expo from 'expo';
 import moment from 'moment';
@@ -59,7 +61,7 @@ export default class TimerScreen extends Component {
         .duration(this.state.timeDifference, 'milliseconds')
         .format('h [hours], m [minutes], s [seconds]')} to finish! `
     );
-    this.setState({ timer: null, started: false });
+    this.setState({ timeDifference: null, timer: null, started: false });
     clearInterval(this.timer);
   }
 
@@ -76,63 +78,67 @@ export default class TimerScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.box}>
-          <Text style={styles.timer}>{this.timerText()}</Text>
-        </View>
-        <View
-          style={(styles.box, { flexDirection: 'row', alignItems: 'baseline' })}
+        <KeyboardAwareScrollView
+          enableOnAndroid
+          enableAutomaticScroll
+          keyboardOpeningTime={0}
         >
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => this.handleStart()}
+          <View style={styles.box}>
+            <Text style={styles.timer}>{this.timerText()}</Text>
+          </View>
+          <View
+            style={
+              (styles.box, { flexDirection: 'row', alignItems: 'baseline' })
+            }
           >
-            <Ionicons name="ios-play-outline" color="black" size={70} />
-          </TouchableOpacity>
-          {/* <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => this.setState({ finished: moment() })}
-          >
-            <Ionicons name="ios-pause-outline" size={70} color="black" />
-          </TouchableOpacity> */}
-          <TouchableOpacity
-            style={styles.buttonContainer}
-            onPress={() => {
-              this.handleReset();
-            }}
-          >
-            <Ionicons
-              name="ios-remove-circle-outline"
-              size={70}
-              color="black"
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => this.handleStart()}
+            >
+              <Ionicons name="ios-play-outline" color="black" size={70} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => {
+                this.handleReset();
+              }}
+            >
+              <Ionicons
+                name="ios-remove-circle-outline"
+                size={70}
+                color="black"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.box}>
+            <TextInput
+              style={{
+                flex: 1,
+                alignSelf: 'stretch',
+                color: 'black',
+                padding: 5,
+                borderBottomWidth: 5,
+                fontSize: 30,
+                borderTopWidth: 5,
+                borderTopColor: '#fff',
+                marginBottom: 10,
+              }}
+              underlineColorAndroid="transparent"
+              placeholder="+ Minutes"
+              onChangeText={text => {
+                this.handleStart();
+                if (text > 0) {
+                  setTimeout(() => {
+                    this.playTrack();
+                    alert(`Time's up! `);
+                  }, text * 60000);
+                }
+              }}
+              value={this.state.timeGoal}
             />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.box}>
-          <TextInput
-            style={{
-              flex: 1,
-              alignSelf: 'stretch',
-              color: 'black',
-              padding: 5,
-              borderBottomWidth: 5,
-              fontSize: 30,
-              borderTopWidth: 5,
-              borderTopColor: '#fff',
-              marginBottom: 10,
-            }}
-            placeholder="+"
-            onChangeText={text => {
-              this.handleStart();
-              if (text > 0) {
-                setTimeout(() => {
-                  this.playTrack();
-                  alert(`Time's up! `);
-                }, text * 60000);
-              }
-            }}
-            value={this.state.timeGoal}
-          />
-        </View>
+          </View>
+        </KeyboardAwareScrollView>
       </View>
     );
   }

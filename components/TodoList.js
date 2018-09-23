@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   Text,
+  Platform,
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -201,6 +202,7 @@ export default class TodoListScreen extends Component {
             />
           ))}
         </ScrollView>
+
         <TextInput
           style={styles.textInput}
           placeholder="What do you need to do?"
@@ -209,6 +211,7 @@ export default class TodoListScreen extends Component {
           onChangeText={this.newTask}
           value={task}
         />
+
         <TouchableOpacity
           style={styles.addButton}
           onPress={this.addNote.bind(this)}
