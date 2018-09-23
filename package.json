@@ -27,6 +27,7 @@
     "react-native-countdown-component": "^1.7.3",
     "react-native-elements": "^0.19.1",
     "react-native-keyboard-aware-scroll-view": "^0.7.2",
+    "react-native-sound": "^0.10.9",
     "react-navigation": "^2.16.0",
     "uuid": "^3.3.2",
     "watchman": "^1.0.0"

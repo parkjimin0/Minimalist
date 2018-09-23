@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import TodoListScreen from './TodoList';
 import { createStackNavigator } from 'react-navigation';
 import TimerScreen from './Timer';
+import { AppRegistry } from 'react-native';
+import Expo from 'expo';
 
 const RootStack = createStackNavigator({
   ToDoList: {
@@ -42,3 +44,6 @@ export default class App extends Component {
     return <RootStack />;
   }
 }
+
+// AppRegistry.registerComponent('App', () => App);
+Expo.registerRootComponent(App);

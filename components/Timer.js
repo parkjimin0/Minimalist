@@ -3,12 +3,14 @@ import {
   StyleSheet,
   View,
   Text,
-  Button,
   TextInput,
   TouchableOpacity,
+  Vibration,
 } from 'react-native';
-import { Constants } from 'expo';
-import { EvilIcons, MaterialIcons, Ionicons } from '@expo/vector-icons';
+
+import Expo from 'expo';
+
+import { Ionicons } from '@expo/vector-icons';
 
 export default class TimerScreen extends Component {
   constructor() {
@@ -84,7 +86,24 @@ export default class TimerScreen extends Component {
     return formattedTime;
   }
 
+  async playTrack() {
+    const soundObject = new Expo.Audio.Sound();
+    try {
+      await soundObject.loadAsync(require('./ovenbell.mp3'));
+      await soundObject.playAsync();
+      // Your sound is playing!
+    } catch (err) {
+      console.error('Sound problems', err);
+    }
+  }
+
   render() {
+    if (this.state.remainingSeconds === 1) {
+      Vibration.vibrate(3000);
+
+      this.playTrack();
+      alert(`Time's up!`);
+    }
     return (
       <View style={styles.container}>
         <View style={styles.box}>
